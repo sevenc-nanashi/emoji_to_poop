@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -24,7 +25,9 @@ func main() {
 
 	client := twitter.NewClient(httpClient)
 
-	start(client)
+	userId := strings.Split(os.Getenv("ACCESS_KEY"), "-")[0]
+
+	start(client, userId)
 }
 
 func getLastId() int64 {
@@ -46,7 +49,7 @@ func setLastId(id int64) {
 	ioutil.WriteFile("last_id.txt", []byte(strconv.Itoa(int(id))), 0644)
 }
 
-func start(client *twitter.Client) {
+func start(client *twitter.Client, userId string) {
 	for {
 		println("Starting...")
 		lastId := getLastId()
@@ -62,7 +65,7 @@ func start(client *twitter.Client) {
 			sort.Slice(tweets, func(i, j int) bool { return tweets[i].ID > tweets[j].ID })
 			setLastId(tweets[0].ID)
 			for _, tweet := range tweets {
-				processTweet(client, tweet)
+				processTweet(client, tweet, userId)
 			}
 		} else {
 			println("No new tweets")
@@ -71,8 +74,12 @@ func start(client *twitter.Client) {
 	}
 }
 
-func processTweet(client *twitter.Client, tweet twitter.Tweet) {
+func processTweet(client *twitter.Client, tweet twitter.Tweet, userId string) {
 	println("Received tweet: " + tweet.Text)
+	if tweet.User.IDStr == userId {
+		println("Ignoring own tweet")
+		return
+	}
 	println("URL: " + "https://twitter.com/" + tweet.User.ScreenName + "/status/" + tweet.IDStr)
 	println(tweet.InReplyToStatusID)
 	if tweet.InReplyToStatusID == 0 {
