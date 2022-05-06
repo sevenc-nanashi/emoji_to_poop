@@ -6,4 +6,5 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20220428155120-ee736133298b
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/joho/godotenv v1.4.0
+	github.com/urakozz/go-emoji v0.0.0-20200127103110-a37fee94b407
 )
