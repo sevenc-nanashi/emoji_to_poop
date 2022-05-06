@@ -65,7 +65,9 @@ func start(client *twitter.Client, userId string) {
 			sort.Slice(tweets, func(i, j int) bool { return tweets[i].ID > tweets[j].ID })
 			setLastId(tweets[0].ID)
 			for _, tweet := range tweets {
-				processTweet(client, tweet, userId)
+				if strings.Contains(tweet.Text, "@"+os.Getenv("BOT_NAME")) {
+					processTweet(client, tweet, userId)
+				}
 			}
 		} else {
 			println("No new tweets")
