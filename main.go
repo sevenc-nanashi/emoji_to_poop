@@ -100,17 +100,17 @@ func processTweet(client *twitter.Client, tweet twitter.Tweet, userId string) {
 		}
 		return
 	}
-	replyTweets, _, err := client.Statuses.Lookup([]int64{tweet.InReplyToStatusID}, nil)
-	if err != nil || len(replyTweets) == 0 {
+	repliedTweetSearch, _, err := client.Statuses.Lookup([]int64{tweet.InReplyToStatusID}, nil)
+	if err != nil || len(repliedTweetSearch) == 0 {
 		return
 	}
-	replyTweet := replyTweets[0]
-	text := replyTweet.Text
+	repliedTweet := repliedTweetSearch[0]
+	text := repliedTweet.Text
 	parser := emoji.NewEmojiParser()
 
 	replaced := parser.ReplaceAllString(text, "💩")
 	replaceReplyTweet, _, err := client.Statuses.Update(
-		"@"+replyTweet.User.ScreenName+"\n"+replaced,
+		"@"+tweet.User.ScreenName+"\n"+replaced,
 		&twitter.StatusUpdateParams{
 			InReplyToStatusID: tweet.ID,
 		},
